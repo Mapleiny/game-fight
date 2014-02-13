@@ -1,0 +1,1 @@
+supervisor C:\Users\bjyinheng\Documents\GitHub\game-fight\web-server\app
