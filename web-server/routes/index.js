@@ -21,16 +21,16 @@ module.exports = function(app) {
 		if( !req.session.admin ){
 			return res.send('unpremited');;
 		}
-		res.send('ok');
-		return;
 		res.render('admin/',function (){
 
 		});
 	});
 
-	app.get('/login',function ( req , res ){
-		res.render('login', {
-			title: '登录' 
+	app.get('/signin',function ( req , res ){
+		res.render('admin/signin', {
+			title: '登录',
+			stylesheets : '<link rel="stylesheet" href="stylesheets/admin/compiled/signin.css" type="text/css" media="screen" />',
+			javascripts : ''
 		});
 	});
 
@@ -41,8 +41,7 @@ module.exports = function(app) {
 
 			res.redirect('/admin');
 		}
-	})
-
+	});
 
 
 	/*app.get('/', function (req, res) {
