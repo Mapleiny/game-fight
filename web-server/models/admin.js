@@ -1,26 +1,20 @@
 var mongodb = require('./db');
 
-function User(user) {
-    this.property = user;
+function admin(user) {
+    this.name = user.name;
+    this.password = user.password;
 };
 
 module.exports = User;
 
-
-User.prototype.setProperty = function( property ){
-    var key;
-
-    for( key in property ){
-        this.property[key] = property[key];
-    }
-
-    return this;
-};
-
-
 //存储用户信息
 User.prototype.save = function(callback) {
-    var _this = this;
+    //要存入数据库的用户文档
+    var user = {
+        name: this.name,
+        password: this.password,
+        email: this.email
+    };
     //打开数据库
     mongodb.open(function (err, db) {
         if (err) {
@@ -33,7 +27,7 @@ User.prototype.save = function(callback) {
                 return callback(err);//错误，返回 err 信息
             }
             //将用户数据插入 users 集合
-            collection.insert(_this.property, {
+            collection.insert(user, {
                 safe: true
             }, function (err, user) {
                 mongodb.close();

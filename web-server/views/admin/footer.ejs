@@ -1,24 +1,3 @@
 <%- javascripts %>
-<!-- scripts -->
-    <script src="http://code.jquery.com/jquery-latest.js"></script>
-    <script src="javascripts/admin/bootstrap.min.js"></script>
-    <script src="javascripts/admin/theme.js"></script>
-
-    <!-- pre load bg imgs -->
-    <script type="text/javascript">
-        $(function () {
-            // bg switcher
-            var $btns = $(".bg-switch .bg");
-            $btns.click(function (e) {
-                e.preventDefault();
-                $btns.removeClass("active");
-                $(this).addClass("active");
-                var bg = $(this).data("img");
-
-                $("html").css("background-image", "url('images/admin/bgs/" + bg + "')");
-            });
-
-        });
-    </script>
 </body>
 </html>
