@@ -8,7 +8,9 @@ $(function(){
             error : function(json){
                 console.log(json);
             },success : function(json){
-                console.log(json);
+                if( json.status == 'ok' ){
+                	location.href = '/admin';
+                }
             }
         });
         return false;

@@ -53,7 +53,37 @@ module.exports = function(app) {
 	});
 
 	app.post('/admin/signin',function ( req , res ){
-		return res.json(200,{status : 'ok'});
+		var username = req.body.username,
+			password = req.body.password;
+
+		var md5 = crypto.createHash('md5');
+		
+		password = md5.update(req.body.password).digest('hex');
+
+		User.validate( username , password , function ( err , user ){
+			if( err ){
+				return res.redirect('/admin/signin');
+				
+			}else{
+				if( user ){
+					req.session.user = user;//用户信息存入 session
+
+					req.session.islogin = true;
+
+					
+					return res.json(200,{
+						status : 'ok'
+					});
+				}else{
+					return res.json(200,{
+						status : 'fail',
+						message:'账号或密码错误！'
+					});
+				}
+				
+			}
+			
+		});
 	});
 
 
