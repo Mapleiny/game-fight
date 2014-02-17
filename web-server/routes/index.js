@@ -14,14 +14,25 @@ module.exports = function(app) {
 
 
 	// 管理页面
-	app.get('/admin',function ( req , res ){
+	// 登录
+
+
+
+
+	app.all('/admin/*',function ( req , res ){
 		if( !req.session.islogin ){
 			return res.redirect('/admin/signin');
 		}
 
 		if( !req.session.user.admin ){
-			return res.send('unpremited');;
+			return res.redirect('/unpremited');
 		}
+
+		return console.log(req.session.user);
+	});
+
+
+	app.get('/admin',function ( req , res ){
 
 		var css = ['admin/compiled/index'],
 			js = [
@@ -39,112 +50,7 @@ module.exports = function(app) {
 	});
 
 
-	// 登录
-	app.get('/admin/signin',function ( req , res ){
-		var css = ['admin/compiled/signin'],
-			js = ['lib/jquery/jquery-2.1.0.min','common/request','admin/signin'];
 
-
-		res.render('admin/signin', {
-			title: '登录',
-			stylesheets : Load.css(css),
-			javascripts : Load.js(js)
-		});
-	});
-
-	app.post('/admin/signin',function ( req , res ){
-		var username = req.body.username,
-			password = req.body.password;
-
-		var md5 = crypto.createHash('md5');
-		
-		password = md5.update(req.body.password).digest('hex');
-
-		User.validate( username , password , function ( err , user ){
-			if( err ){
-				return res.redirect('/admin/signin');
-				
-			}else{
-				if( user ){
-					req.session.user = user;//用户信息存入 session
-
-					req.session.islogin = true;
-
-					
-					return res.json(200,{
-						status : 'ok'
-					});
-				}else{
-					return res.json(200,{
-						status : 'fail',
-						message:'账号或密码错误！'
-					});
-				}
-				
-			}
-			
-		});
-	});
-
-
-	// 注册
-	app.get('/admin/signup',function ( req , res ){
-		var css = ['admin/compiled/signup'],
-			js = ['lib/jquery/jquery-2.1.0.min','common/request','admin/signup'];
-
-
-		res.render('admin/signup', {
-			title: '登录',
-			stylesheets : Load.css(css),
-			javascripts : Load.js(js)
-		});
-	});
-
-	app.post('/admin/signup',function ( req , res ){
-		var username = req.body.username,
-			password = req.body.password,
-			sweet = req.body.sweet,
-			password_re = req.body['password-repeat'];
-
-
-
-		if (password_re != password) {
-			return res.redirect('/admin/signup');//返回注册页
-		}
-
-
-		var md5 = crypto.createHash('md5');
-		
-		password = md5.update(req.body.password).digest('hex');
-
-		var newUser = new User({
-			username: req.body.username,
-			password: password
-		});
-
-		User.get(newUser.username, function (err, user) {
-			if (user) {
-				return res.redirect('/admin/signup');//返回注册页
-			}
-
-			if( sweet == 'mapleiny' ){
-				newUser.setProperty({
-					'admin' : true
-				});
-			}
-			//如果不存在则新增用户
-			newUser.save(function (err, user) {
-				if (err) {
-					return res.redirect('/admin/signup');//注册失败返回主册页
-				}
-				req.session.user = user;//用户信息存入 session
-
-				req.session.islogin = true;
-
-				res.redirect('/admin');//注册成功后返回主页
-			});
-		});
-	});
 
 
 	/*app.get('/', function (req, res) {
