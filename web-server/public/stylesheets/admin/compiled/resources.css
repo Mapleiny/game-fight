@@ -1,0 +1,59 @@
+#category{
+	padding: 0 10px;
+}
+#category .panel-heading{
+	position: relative;
+}
+#category .edit{
+	position: absolute;
+	right: 0;
+	top: 0;
+	padding: 10px;
+}
+
+/* step display */
+.steps-display{
+	height: 70px;
+}
+
+.steps-display .steps{
+	list-style: none;
+	margin: 0px;
+	padding: 0px;
+}
+
+.steps-display .steps > li{
+	display: inline-block;
+	text-align: center;
+	width: 32%;
+}
+.steps-display .steps > li.active .step{
+	border-color: #cbdeee;
+	color: #34a0ed;
+	background-color: #f2f7fb;
+	font-weight: bold;
+	box-shadow: inset 0px 0px 1px 2px #fff;
+}
+.steps-display .steps > li .title{
+	display: block;
+	max-width: 100%;
+	color: #b1bcc5;
+	font-size: 12px;
+	z-index: 104;
+	text-align: center;
+	position: relative;
+	top: 50px;
+}
+.steps-display .steps > li .step{
+	text-align: center;
+	border: 2px solid #e5e8ed;
+	color: #d8dce6;
+	font-size: 19px;
+	border-radius: 32px;
+	line-height: 12px;
+	padding: 7px 15px;
+	background-color: #FFF;
+	position: relative;
+	z-index: 2;
+	display: inline;
+}

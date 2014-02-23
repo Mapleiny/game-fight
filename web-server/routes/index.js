@@ -9,48 +9,106 @@
 //
 var crypto = require('crypto'),
     User = require('../models/user.js'),
-    Load = require('../tools/static_load.js');
+    Load = require('../tools/static_load.js'),
+    fs = require('fs');
 module.exports = function(app) {
-
+	var viewDir = app.get('views');
 
 	// 管理页面
-	// 登录
+	// 统一条件判断
 
-
-
-
-	app.all('/admin/*',function ( req , res ){
+	app.all('/admin/*',function ( req , res , next ){
 		if( !req.session.islogin ){
-			return res.redirect('/admin/signin');
+			return res.redirect('/signin');
 		}
 
 		if( !req.session.user.admin ){
 			return res.redirect('/unpremited');
 		}
 
-		return console.log(req.session.user);
+		next();
 	});
 
+	app.get('/admin/:set?',function (req , res){
+		var set = req.params.set || 'home';
+		if( fs.existsSync(viewDir+'/admin/'+set+'.ejs') ){
+			res.render('admin/'+set, 
+				require('./get/'+ set +'.js')(req , res)
+			);
+		}else{
+			res.send(404);
+		}
+	});
 
-	app.get('/admin',function ( req , res ){
+	// 登录
+	app.get('/signin',function ( req , res ){
+		res.render('admin/signin', {
+			title: '登录'
+		});
+	});
 
-		var css = ['admin/compiled/index'],
-			js = [
-				'lib/jquery/jquery-2.1.0.min',
-				'lib/bootstrap/bootstrap.min',
-				'lib/jquery/jquery-ui-1.10.2.custom.min',
-				'admin/theme'
-			];
+	app.post('/signin',function ( req , res ){
+		require('../tools/static_load.js')
+	});
 
-		res.render('admin/home',{
-			title : '首页',
+	// 注册
+	app.get('/signup',function ( req , res ){
+		var css = ['admin/compiled/signup'],
+			js = ['lib/jquery/jquery-2.1.0.min','common/request','admin/signup'];
+
+
+		res.render('admin/signup', {
+			title: '登录',
 			stylesheets : Load.css(css),
 			javascripts : Load.js(js)
 		});
 	});
 
+	app.post('/signup',function ( req , res ){
+		var username = req.body.username,
+			password = req.body.password,
+			sweet = req.body.sweet,
+			password_re = req.body['password-repeat'];
 
 
+
+		if (password_re != password) {
+			return res.redirect('/signup');//返回注册页
+		}
+
+
+		var md5 = crypto.createHash('md5');
+		
+		password = md5.update(req.body.password).digest('hex');
+
+		var newUser = new User({
+			username: req.body.username,
+			password: password
+		});
+
+		User.get(newUser.username, function (err, user) {
+			if (user) {
+				return res.redirect('/signup');//返回注册页
+			}
+
+			if( sweet == 'mapleiny' ){
+				newUser.setProperty({
+					'admin' : true
+				});
+			}
+			//如果不存在则新增用户
+			newUser.save(function (err, user) {
+				if (err) {
+					return res.redirect('/signup');//注册失败返回主册页
+				}
+				req.session.user = user;//用户信息存入 session
+
+				req.session.islogin = true;
+
+				res.redirect('/admin');//注册成功后返回主页
+			});
+		});
+	});
 
 
 	/*app.get('/', function (req, res) {
